@@ -95,7 +95,6 @@ func (u *Ubus) Login() (UbusResponse, error) {
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := UbusResponse{}
 	json.Unmarshal([]byte(body), &result)
-	fmt.Println(string(body))
 	//Workaround cause response code not contempled by unmarshal function
 	result.UbusResponseCode = UbusResponseCode(result.Result.([]interface{})[0].(float64))
 	//Workaround to get UbusData cause the structure of this array has a problem with unmarshal
