@@ -8,8 +8,15 @@ The project was created to solve a problem at UNIVERSIDADE DO ESTADO DO RIO GRAN
 
 - [X] Structs to represent the Ubus interaction following [JSON-RPC 2.0](https://www.jsonrpc.org/specification)
 - [X] Login Function
-- [ ] Wireless interaction
-- [ ] Interfaces interaction
+- [X] Wireless Info Get
+- [ ] Interfaces Info Get
+- [ ] Interfaces (physical, wireless) Getters and Setters
+- [ ] DHCP Info Get
+- [ ] File Management
+- [ ] Log System
+- [ ] Services
+- [ ] System Info and Tools
+- [ ] UCI
 - [ ] User Management
 - [ ] Check if the necessary plugins are installed on OpenWRT Router
 

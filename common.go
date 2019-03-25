@@ -1,6 +1,14 @@
 package goubus
 
-import "time"
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"time"
+)
 
 //UbusResponseCode represent the status code from JSON-RPC Call
 type UbusResponseCode float64
@@ -29,7 +37,59 @@ type Ubus struct {
 	AuthData UbusAuthData
 }
 
-//LoginExpired check if login RPC Session id has expired
-func (u *Ubus) LoginExpired() bool {
-	return u.AuthData.ExpireTime.Before(time.Now())
+//UbusResponse represents a response from JSON-RPC
+type UbusResponse struct {
+	JSONRPC          string
+	ID               int
+	Result           interface{}
+	UbusResponseCode UbusResponseCode
+}
+
+//LoginCheck check if login RPC Session id has expired
+func (u *Ubus) LoginCheck() error {
+	var err error
+	var i uint8
+	for start := time.Now(); time.Since(start) < 3*time.Second; {
+		if u.AuthData.ExpireTime.Before(time.Now()) {
+			_, err = u.AuthLogin()
+			if err == nil {
+				break
+			}
+		} else {
+			break
+		}
+		i++
+		time.Sleep(time.Second)
+	}
+	if i == 2 {
+		return errors.New("Login Timeout")
+	}
+	return nil
+}
+
+//Call do a call to Json-RPC to get/set information
+func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
+	req, err := http.NewRequest("POST", u.URL, bytes.NewBuffer(jsonStr))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.Status != "200 OK" {
+		return UbusResponse{}, errors.New(resp.Status)
+	}
+	body, _ := ioutil.ReadAll(resp.Body)
+	result := UbusResponse{}
+	json.Unmarshal([]byte(body), &result)
+	//Workaround cause response code not contempled by unmarshal function
+	result.UbusResponseCode = UbusResponseCode(result.Result.([]interface{})[0].(float64))
+	//Workaround to get UbusData cause the structure of this array has a problem with unmarshal
+	if result.UbusResponseCode == UbusStatusOK {
+		return result, nil
+	}
+	return UbusResponse{}, fmt.Errorf("Ubus Status Failed: %v", result.UbusResponseCode)
 }
