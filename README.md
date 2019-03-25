@@ -15,7 +15,7 @@ Please check our [License](LICENSE)
 - [ ] Interfaces (physical, wireless) Getters and Setters
 - [ ] DHCP Info Get
 - [X] File Management
-- [ ] Log System (NOT SUPPORTED 18.02)
+- [X] Log System
 - [ ] Services
 - [ ] System Info and Tools
 - [ ] UCI
