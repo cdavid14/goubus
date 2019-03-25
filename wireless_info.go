@@ -6,6 +6,10 @@ import (
 	"strconv"
 )
 
+type UbusWirelessDevice struct {
+	Devices []string
+}
+
 type UbusWirelessInfoData struct {
 	Phy        string
 	SSID       string
@@ -291,6 +295,36 @@ func (u *Ubus) WirelessInfo(id int, device string) (UbusWirelessInfoData, error)
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
 	if err != nil {
 		return UbusWirelessInfoData{}, errors.New("Data error")
+	}
+	json.Unmarshal(ubusDataByte, &ubusData)
+	return ubusData, nil
+}
+
+func (u *Ubus) WirelessDevices(id int) (UbusWirelessDevice, error) {
+	errLogin := u.LoginCheck()
+	if errLogin != nil {
+		return UbusWirelessDevice{}, errors.New("Error on Login")
+	}
+	var jsonStr = []byte(`
+		{ 
+			"jsonrpc": "2.0", 
+			"id": ` + strconv.Itoa(id) + `, 
+			"method": "call", 
+			"params": [ 
+				"` + u.AuthData.UbusRPCSession + `", 
+				"iwinfo", 
+				"devices",
+				{}
+			] 
+		}`)
+	call, err := u.Call(jsonStr)
+	if err != nil {
+		return UbusWirelessDevice{}, err
+	}
+	ubusData := UbusWirelessDevice{}
+	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
+	if err != nil {
+		return UbusWirelessDevice{}, errors.New("Data error")
 	}
 	json.Unmarshal(ubusDataByte, &ubusData)
 	return ubusData, nil
