@@ -1,5 +1,7 @@
 package goubus
 
+import "time"
+
 //UbusResponseCode represent the status code from JSON-RPC Call
 type UbusResponseCode float64
 
@@ -24,4 +26,10 @@ type Ubus struct {
 	Username string
 	Password string
 	URL      string
+	AuthData UbusAuthData
+}
+
+//LoginExpired check if login RPC Session id has expired
+func (u *Ubus) LoginExpired() bool {
+	return u.AuthData.ExpireTime.Before(time.Now())
 }

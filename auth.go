@@ -16,7 +16,6 @@ type UbusAuthResponse struct {
 	ID               int
 	Result           interface{}
 	UbusResponseCode UbusResponseCode
-	UbusData         UbusAuthData
 }
 
 //UbusAuthData represents the Data response from auth module
@@ -79,13 +78,14 @@ func (u *Ubus) AuthLogin() (UbusAuthResponse, error) {
 			return UbusAuthResponse{}, errors.New("Data error")
 		}
 		json.Unmarshal(ubusDataByte, &ubusData)
-		result.UbusData = ubusData
+		u.AuthData = ubusData
 	} else {
 		return UbusAuthResponse{}, fmt.Errorf("Ubus Status Failed: %v", result.UbusResponseCode)
 	}
 	//Editing expire to current time + expire time to check in functions if the session has expired
-	result.UbusData.ExpireTime = time.Now().Add(time.Second * time.Duration(result.UbusData.Expires))
+	u.AuthData.ExpireTime = time.Now().Add(time.Second * time.Duration(u.AuthData.Expires))
 	//Clear result Interface data
 	result.Result = ""
+	//Set AuthData to Ubus struct
 	return result, nil
 }
