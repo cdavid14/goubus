@@ -4,6 +4,8 @@ That library was developed for communication with [Ubus (OpenWrt micro bus archi
 
 The project was created to solve a problem at UNIVERSIDADE DO ESTADO DO RIO GRANDE DO NORTE - UERN with network management with low-cost routers.
 
+Please check our [License](LICENSE)
+
 # TO-DO
 
 - [X] Structs to represent the Ubus interaction following [JSON-RPC 2.0](https://www.jsonrpc.org/specification)
