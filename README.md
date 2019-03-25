@@ -25,7 +25,7 @@ The project was created to solve a problem at UNIVERSIDADE DO ESTADO DO RIO GRAN
     )
     
     func main() {
-    	ubus := Ubus{
+    	ubus := goubus.Ubus{
     	  Username: "root",
     	  Password: "admin",
     	  URL:      "http://192.168.88.1/ubus",
