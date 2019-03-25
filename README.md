@@ -20,6 +20,11 @@ The project was created to solve a problem at UNIVERSIDADE DO ESTADO DO RIO GRAN
 - [ ] User Management
 - [ ] Check if the necessary plugins are installed on OpenWRT Router
 
+# Conventions
+
+The ID 1 from JSON-RPC 2.0 Requests is reserved for Login procedure
+
+
 # Example
 
 
@@ -35,7 +40,7 @@ The project was created to solve a problem at UNIVERSIDADE DO ESTADO DO RIO GRAN
     	ubus := goubus.Ubus{
     	  Username: "root",
     	  Password: "admin",
-    	  URL:      "http://192.168.88.1/ubus",
+    	  URL:      "http://192.168.1.1/ubus",
     	}
     	result, err := ubus.Login()
     	if err != nil {
