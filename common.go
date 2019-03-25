@@ -11,7 +11,8 @@ import (
 )
 
 //UbusResponseCode represent the status code from JSON-RPC Call
-type UbusResponseCode float64
+//go:generate stringer -type=UbusResponseCode
+type UbusResponseCode int
 
 //Represents enum ubus_msg_status from https://git.openwrt.org/?p=project/ubus.git;a=blob;f=ubusmsg.h;h=398b126b6dc01833937749a110181ea0debb1476;hb=HEAD
 const (
@@ -75,7 +76,7 @@ func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return UbusResponse{}, err
 	}
 	defer resp.Body.Close()
 
@@ -91,5 +92,5 @@ func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
 	if result.UbusResponseCode == UbusStatusOK {
 		return result, nil
 	}
-	return UbusResponse{}, fmt.Errorf("Ubus Status Failed: %v", result.UbusResponseCode)
+	return UbusResponse{}, fmt.Errorf("Ubus Status Failed: %s", result.UbusResponseCode)
 }
