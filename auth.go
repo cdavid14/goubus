@@ -64,7 +64,7 @@ func (u *Ubus) AuthLogin() (UbusAuthResponse, error) {
 	defer resp.Body.Close()
 
 	if resp.Status != "200 OK" {
-		return UbusResponse{}, errors.New(resp.Status)
+		return UbusAuthResponse{}, errors.New(resp.Status)
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := UbusAuthResponse{}
@@ -73,10 +73,10 @@ func (u *Ubus) AuthLogin() (UbusAuthResponse, error) {
 	result.UbusResponseCode = UbusResponseCode(result.Result.([]interface{})[0].(float64))
 	//Workaround to get UbusData cause the structure of this array has a problem with unmarshal
 	if result.UbusResponseCode == UbusStatusOK {
-		ubusData := UbusData{}
+		ubusData := UbusAuthData{}
 		ubusDataByte, err := json.Marshal(result.Result.([]interface{})[1])
 		if err != nil {
-			return UbusResponse{}, errors.New("Data error")
+			return UbusAuthResponse{}, errors.New("Data error")
 		}
 		json.Unmarshal(ubusDataByte, &ubusData)
 		result.UbusData = ubusData
