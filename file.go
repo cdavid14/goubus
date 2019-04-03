@@ -33,15 +33,10 @@ type UbusFile struct {
 	Data string
 }
 
-type UbusFileExec struct {
-	Code   int
-	Stdout string
-}
-
-func (u *Ubus) FileExec(id int, command string, params []string) (UbusFileExec, error) {
+func (u *Ubus) FileExec(id int, command string, params []string) (UbusExec, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusFileExec{}, errors.New("Error on Login")
+		return UbusExec{}, errors.New("Error on Login")
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -62,12 +57,12 @@ func (u *Ubus) FileExec(id int, command string, params []string) (UbusFileExec, 
 		}`)
 	call, err := u.Call(jsonStr)
 	if err != nil {
-		return UbusFileExec{}, err
+		return UbusExec{}, err
 	}
-	ubusData := UbusFileExec{}
+	ubusData := UbusExec{}
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
 	if err != nil {
-		return UbusFileExec{}, errors.New("Data error")
+		return UbusExec{}, errors.New("Data error")
 	}
 	json.Unmarshal(ubusDataByte, &ubusData)
 	return ubusData, nil

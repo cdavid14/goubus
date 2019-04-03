@@ -46,6 +46,11 @@ type UbusResponse struct {
 	UbusResponseCode UbusResponseCode
 }
 
+type UbusExec struct {
+	Code   int
+	Stdout string
+}
+
 //LoginCheck check if login RPC Session id has expired
 func (u *Ubus) LoginCheck() error {
 	var err error
