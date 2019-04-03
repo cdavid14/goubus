@@ -62,7 +62,7 @@ type UbusNetworkDeviceStatistic struct {
 func (u *Ubus) NetworkDeviceStatus(id int, name string) (UbusNetworkDevice, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusNetworkDevice{}, errors.New("Error on Login")
+		return UbusNetworkDevice{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 

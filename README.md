@@ -13,7 +13,7 @@ Please check our [License](LICENSE)
 - [X] Wireless Info Get
 - [ ] Interfaces Info Get
 - [ ] Interfaces (physical, wireless) Getters and Setters
-- [ ] DHCP Info Get
+- [X] DHCP Info Get
 - [X] File Management
 - [X] Log System
 - [ ] Services

@@ -21,7 +21,7 @@ type UbusLogData struct {
 func (u *Ubus) LogWrite(id int, event string) error {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return errors.New("Error on Login")
+		return errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -47,7 +47,7 @@ func (u *Ubus) LogWrite(id int, event string) error {
 func (u *Ubus) LogRead(id int, lines int, stream bool, oneshot bool) (UbusLog, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusLog{}, errors.New("Error on Login")
+		return UbusLog{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 

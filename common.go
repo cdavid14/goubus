@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -42,8 +43,14 @@ type Ubus struct {
 type UbusResponse struct {
 	JSONRPC          string
 	ID               int
+	Error            UbusResponseError
 	Result           interface{}
 	UbusResponseCode UbusResponseCode
+}
+
+type UbusResponseError struct {
+	Code    int
+	Message string
 }
 
 type UbusExec struct {
@@ -67,8 +74,8 @@ func (u *Ubus) LoginCheck() error {
 		i++
 		time.Sleep(time.Second)
 	}
-	if i == 2 {
-		return errors.New("Login Timeout")
+	if i == 3 {
+		return err
 	}
 	return nil
 }
@@ -84,13 +91,19 @@ func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
 		return UbusResponse{}, err
 	}
 	defer resp.Body.Close()
-
 	if resp.Status != "200 OK" {
-		return UbusResponse{}, errors.New(resp.Status)
+		return UbusResponse{}, fmt.Errorf("Error %s on (%s)", resp.Status, u.URL)
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := UbusResponse{}
 	json.Unmarshal([]byte(body), &result)
+	//Function Error
+	if result.Error.Code != 0 {
+		if strings.Compare(result.Error.Message, "Access denied") == 0 {
+			return UbusResponse{}, errors.New("Access denied for this instance, read https://openwrt.org/docs/techref/ubus#acls ")
+		}
+		return UbusResponse{}, errors.New(result.Error.Message)
+	}
 	//Workaround cause response code not contempled by unmarshal function
 	result.UbusResponseCode = UbusResponseCode(result.Result.([]interface{})[0].(float64))
 	//Workaround to get UbusData cause the structure of this array has a problem with unmarshal

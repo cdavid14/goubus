@@ -110,7 +110,7 @@ type UbusCountryListData struct {
 func (u *Ubus) WirelessCountryList(id int, device string) (UbusCountryList, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusCountryList{}, errors.New("Error on Login")
+		return UbusCountryList{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -142,7 +142,7 @@ func (u *Ubus) WirelessCountryList(id int, device string) (UbusCountryList, erro
 func (u *Ubus) WirelessTxPowerList(id int, device string) (UbusTxPowerList, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusTxPowerList{}, errors.New("Error on Login")
+		return UbusTxPowerList{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -174,7 +174,7 @@ func (u *Ubus) WirelessTxPowerList(id int, device string) (UbusTxPowerList, erro
 func (u *Ubus) WirelessFreqList(id int, device string) (UbusWirelessFreqList, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusWirelessFreqList{}, errors.New("Error on Login")
+		return UbusWirelessFreqList{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -206,7 +206,7 @@ func (u *Ubus) WirelessFreqList(id int, device string) (UbusWirelessFreqList, er
 func (u *Ubus) WirelessAssocList(id int, device string, mac string) (UbusWirelessAssocList, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusWirelessAssocList{}, errors.New("Error on Login")
+		return UbusWirelessAssocList{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -239,7 +239,7 @@ func (u *Ubus) WirelessAssocList(id int, device string, mac string) (UbusWireles
 func (u *Ubus) WirelessScanner(id int, device string) (UbusWirelessScanner, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusWirelessScanner{}, errors.New("Error on Login")
+		return UbusWirelessScanner{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -271,7 +271,7 @@ func (u *Ubus) WirelessScanner(id int, device string) (UbusWirelessScanner, erro
 func (u *Ubus) WirelessInfo(id int, device string) (UbusWirelessInfoData, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusWirelessInfoData{}, errors.New("Error on Login")
+		return UbusWirelessInfoData{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -303,7 +303,7 @@ func (u *Ubus) WirelessInfo(id int, device string) (UbusWirelessInfoData, error)
 func (u *Ubus) WirelessDevices(id int) (UbusWirelessDevice, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusWirelessDevice{}, errors.New("Error on Login")
+		return UbusWirelessDevice{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 

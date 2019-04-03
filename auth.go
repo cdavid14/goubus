@@ -3,6 +3,7 @@ package goubus
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -42,12 +43,16 @@ func (u *Ubus) AuthLogin() (UbusResponse, error) {
 		}`)
 	call, err := u.Call(jsonStr)
 	if err != nil {
+		if strings.Compare(err.Error(), "404 Not Found") == 0 {
+			return UbusResponse{}, errors.New("Ubus module not installed, try 'opkg update && opkg install uhttpd-mod-ubus && service uhttpd restart'")
+		}
+
 		return UbusResponse{}, err
 	}
 	ubusData := UbusAuthData{}
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
 	if err != nil {
-		return UbusResponse{}, errors.New("Data error")
+		return UbusResponse{}, errors.New("Error Parsing Login Data")
 	}
 	json.Unmarshal(ubusDataByte, &ubusData)
 	//Set AuthData to Ubus struct

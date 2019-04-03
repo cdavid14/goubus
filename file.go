@@ -36,7 +36,7 @@ type UbusFile struct {
 func (u *Ubus) FileExec(id int, command string, params []string) (UbusExec, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusExec{}, errors.New("Error on Login")
+		return UbusExec{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -57,6 +57,9 @@ func (u *Ubus) FileExec(id int, command string, params []string) (UbusExec, erro
 		}`)
 	call, err := u.Call(jsonStr)
 	if err != nil {
+		if strings.Compare(err.Error(), "Object not found") == 0 {
+			return UbusExec{}, errors.New("File module not found, try 'opkg update && opkg install rpcd-mod-file && service rpcd restart'")
+		}
 		return UbusExec{}, err
 	}
 	ubusData := UbusExec{}
@@ -71,7 +74,7 @@ func (u *Ubus) FileExec(id int, command string, params []string) (UbusExec, erro
 func (u *Ubus) FileWrite(id int, path string, data string, append bool, mode int, base64 bool) error {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return errors.New("Error on Login")
+		return errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -93,6 +96,9 @@ func (u *Ubus) FileWrite(id int, path string, data string, append bool, mode int
 		}`)
 	_, err := u.Call(jsonStr)
 	if err != nil {
+		if strings.Compare(err.Error(), "Object not found") == 0 {
+			return errors.New("File module not found, try 'opkg update && opkg install rpcd-mod-file && service rpcd restart'")
+		}
 		return err
 	}
 	return nil
@@ -101,7 +107,7 @@ func (u *Ubus) FileWrite(id int, path string, data string, append bool, mode int
 func (u *Ubus) FileRead(id int, path string) (UbusFile, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusFile{}, errors.New("Error on Login")
+		return UbusFile{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -119,6 +125,9 @@ func (u *Ubus) FileRead(id int, path string) (UbusFile, error) {
 		}`)
 	call, err := u.Call(jsonStr)
 	if err != nil {
+		if strings.Compare(err.Error(), "Object not found") == 0 {
+			return UbusFile{}, errors.New("File module not found, try 'opkg update && opkg install rpcd-mod-file && service rpcd restart'")
+		}
 		return UbusFile{}, err
 	}
 	ubusData := UbusFile{}
@@ -133,7 +142,7 @@ func (u *Ubus) FileRead(id int, path string) (UbusFile, error) {
 func (u *Ubus) FileStat(id int, path string) (UbusFileStat, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusFileStat{}, errors.New("Error on Login")
+		return UbusFileStat{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -151,6 +160,9 @@ func (u *Ubus) FileStat(id int, path string) (UbusFileStat, error) {
 		}`)
 	call, err := u.Call(jsonStr)
 	if err != nil {
+		if strings.Compare(err.Error(), "Object not found") == 0 {
+			return UbusFileStat{}, errors.New("File module not found, try 'opkg update && opkg install rpcd-mod-file && service rpcd restart'")
+		}
 		return UbusFileStat{}, err
 	}
 	ubusData := UbusFileStat{}
@@ -165,7 +177,7 @@ func (u *Ubus) FileStat(id int, path string) (UbusFileStat, error) {
 func (u *Ubus) FileList(id int, path string) (UbusFileList, error) {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
-		return UbusFileList{}, errors.New("Error on Login")
+		return UbusFileList{}, errLogin
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -183,6 +195,9 @@ func (u *Ubus) FileList(id int, path string) (UbusFileList, error) {
 		}`)
 	call, err := u.Call(jsonStr)
 	if err != nil {
+		if strings.Compare(err.Error(), "Object not found") == 0 {
+			return UbusFileList{}, errors.New("File module not found, try 'opkg update && opkg install rpcd-mod-file && service rpcd restart'")
+		}
 		return UbusFileList{}, err
 	}
 	ubusData := UbusFileList{}
