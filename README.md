@@ -12,15 +12,11 @@ Please check our [License](LICENSE)
 - [X] Login Function
 - [X] Wireless Info Get
 - [ ] Interfaces Info Get
-- [ ] Interfaces (physical, wireless) Getters and Setters
 - [X] DHCP Info Get
 - [X] File Management
 - [X] Log System
-- [ ] Services
-- [ ] System Info and Tools
 - [ ] UCI
-- [ ] User Management
-- [ ] Check if the necessary plugins are installed on OpenWRT Router
+- [X] Check if the necessary plugins are installed on OpenWRT Router
 
 # Conventions
 
