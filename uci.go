@@ -20,6 +20,7 @@ type UbusUciRequest struct {
 }
 
 type UbusUciResponse struct {
+	Value  interface{}
 	Values interface{}
 }
 
@@ -77,6 +78,9 @@ func (u *Ubus) UciGetConfig(id int, request UbusUciRequest) (UbusUciResponse, er
 	call, err := u.Call(jsonStr)
 	if err != nil {
 		return UbusUciResponse{}, err
+	}
+	if len(call.Result.([]interface{})) <= 1 {
+		return UbusUciResponse{}, errors.New("Empty response")
 	}
 	ubusData := UbusUciResponse{}
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
