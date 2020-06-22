@@ -10,13 +10,22 @@ type UbusUciConfigs struct {
 	Configs []string
 }
 
+type UbusUciRequestGeneric struct {
+	Config  string `json:"config"`
+	Section string `json:"section,omitempty"`
+	Option  string `json:"option,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Match   string `json:"match,omitempty"`
+}
+
 type UbusUciRequest struct {
-	Config  string            `json:"config"`
-	Section string            `json:"section,omitempty"`
-	Option  string            `json:"option,omitempty"`
-	Type    string            `json:"type,omitempty"`
-	Match   string            `json:"match,omitempty"`
-	Values  map[string]string `json:"values,omitempty"`
+	UbusUciRequestGeneric
+	Values map[string]string `json:"values,omitempty"`
+}
+
+type UbusUciRequestList struct {
+	UbusUciRequestGeneric
+	Values map[string][]string `json:"values,omitempty"`
 }
 
 type UbusUciResponse struct {
@@ -91,7 +100,7 @@ func (u *Ubus) UciGetConfig(id int, request UbusUciRequest) (UbusUciResponse, er
 	return ubusData, nil
 }
 
-func (u *Ubus) UciSetConfig(id int, request UbusUciRequest) error {
+func (u *Ubus) UciSetConfig(id int, request interface{}) error {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
 		return errLogin
