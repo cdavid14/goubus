@@ -150,10 +150,16 @@ func (u *Ubus) UciChanges(id int) (map[string]map[string][][]string, error) {
 	return ubusData, nil
 }
 
-func (u *Ubus) UciCommit(id int) error {
+func (u *Ubus) UciCommit(id int, config string) error {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
 		return errLogin
+	}
+	request := UbusUciRequest{}
+	request.Config = config
+	jsonData, err := json.Marshal(request)
+	if err != nil {
+		return errors.New("Error Parsing UCI Request Data")
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -164,10 +170,10 @@ func (u *Ubus) UciCommit(id int) error {
 				"` + u.AuthData.UbusRPCSession + `", 
 				"uci", 
 				"commit", 
-				{}
+				` + string(jsonData) + `
 			] 
 		}`)
-	_, err := u.Call(jsonStr)
+	_, err = u.Call(jsonStr)
 	if err != nil {
 		return err
 	}
