@@ -10,16 +10,26 @@ type UbusUciConfigs struct {
 	Configs []string
 }
 
+type UbusUciRequestGeneric struct {
+	Config  string `json:"config"`
+	Section string `json:"section,omitempty"`
+	Option  string `json:"option,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Match   string `json:"match,omitempty"`
+}
+
 type UbusUciRequest struct {
-	Config  string            `json:"config"`
-	Section string            `json:"section,omitempty"`
-	Option  string            `json:"option,omitempty"`
-	Type    string            `json:"type,omitempty"`
-	Match   string            `json:"match,omitempty"`
-	Values  map[string]string `json:"values,omitempty"`
+	UbusUciRequestGeneric
+	Values map[string]string `json:"values,omitempty"`
+}
+
+type UbusUciRequestList struct {
+	UbusUciRequestGeneric
+	Values map[string][]string `json:"values,omitempty"`
 }
 
 type UbusUciResponse struct {
+	Value  interface{}
 	Values interface{}
 }
 
@@ -78,6 +88,9 @@ func (u *Ubus) UciGetConfig(id int, request UbusUciRequest) (UbusUciResponse, er
 	if err != nil {
 		return UbusUciResponse{}, err
 	}
+	if len(call.Result.([]interface{})) <= 1 {
+		return UbusUciResponse{}, errors.New("Empty response")
+	}
 	ubusData := UbusUciResponse{}
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
 	if err != nil {
@@ -87,7 +100,7 @@ func (u *Ubus) UciGetConfig(id int, request UbusUciRequest) (UbusUciResponse, er
 	return ubusData, nil
 }
 
-func (u *Ubus) UciSetConfig(id int, request UbusUciRequest) error {
+func (u *Ubus) UciSetConfig(id int, request interface{}) error {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
 		return errLogin
@@ -146,10 +159,16 @@ func (u *Ubus) UciChanges(id int) (map[string]map[string][][]string, error) {
 	return ubusData, nil
 }
 
-func (u *Ubus) UciCommit(id int) error {
+func (u *Ubus) UciCommit(id int, config string) error {
 	errLogin := u.LoginCheck()
 	if errLogin != nil {
 		return errLogin
+	}
+	request := UbusUciRequest{}
+	request.Config = config
+	jsonData, err := json.Marshal(request)
+	if err != nil {
+		return errors.New("Error Parsing UCI Request Data")
 	}
 	var jsonStr = []byte(`
 		{ 
@@ -160,10 +179,10 @@ func (u *Ubus) UciCommit(id int) error {
 				"` + u.AuthData.UbusRPCSession + `", 
 				"uci", 
 				"commit", 
-				{}
+				` + string(jsonData) + `
 			] 
 		}`)
-	_, err := u.Call(jsonStr)
+	_, err = u.Call(jsonStr)
 	if err != nil {
 		return err
 	}
