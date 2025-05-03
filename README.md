@@ -11,29 +11,27 @@ Please check our [License](LICENSE)
 - [X] Structs to represent the Ubus interaction following [JSON-RPC 2.0](https://www.jsonrpc.org/specification)
 - [X] Login Function
 - [X] Wireless Info Get
-- [ ] Interfaces Info Get
+- [X] Interfaces Info Get
 - [X] DHCP Info Get
 - [X] File Management
 - [X] Log System
-- [ ] UCI
+- [X] UCI
 - [X] Check if the necessary plugins are installed on OpenWRT Router
 
 # Conventions
 
 The ID 1 from JSON-RPC 2.0 Requests is reserved for Login procedure
 
-
 # Example
 
-
     package main
-    
+
     import (
     	"fmt"
     	"log"
     	"github.com/cdavid14/goubus"
     )
-    
+
     func main() {
     	ubus := goubus.Ubus{
     	  Username: "root",
@@ -57,4 +55,3 @@ and it will return something like
 # Final Notes
 
 Please contribute to make this library most usually as possible and improve more functions!
-

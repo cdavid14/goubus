@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//UbusAuthData represents the Data response from auth module
+// UbusAuthData represents the Data response from auth module
 type UbusAuthData struct {
 	UbusRPCSession string `json:"ubus_rpc_session"`
 	Timeout        int
@@ -17,14 +17,14 @@ type UbusAuthData struct {
 	Data           map[string]string
 }
 
-//UbusAuthACLS represents the ACL from user on Authentication
+// UbusAuthACLS represents the ACL from user on Authentication
 type UbusAuthACLS struct {
 	AccessGroup map[string][]string `json:"access-group"`
 	Ubus        map[string][]string
 	Uci         map[string][]string
 }
 
-//AuthLogin Call JSON-RPC method to Router Authentication
+// AuthLogin Call JSON-RPC method to Router Authentication
 func (u *Ubus) AuthLogin() (UbusResponse, error) {
 	var jsonStr = []byte(`
 		{ 
@@ -49,7 +49,7 @@ func (u *Ubus) AuthLogin() (UbusResponse, error) {
 
 		return UbusResponse{}, err
 	}
-	ubusData := UbusAuthData{}
+	ubusData := &UbusAuthData{}
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
 	if err != nil {
 		return UbusResponse{}, errors.New("Error Parsing Login Data")

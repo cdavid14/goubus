@@ -31,6 +31,8 @@ type UbusNetworkDevice struct {
 	Txqueuelen          int                        `json:"txqueuelen"`
 	Type                string                     `json:"type"`
 	Up                  bool                       `json:"up"`
+	Speed               int                        `json:"speed"`
+	BridgeMembers       []string                   `json:"bridge-members"`
 }
 
 type UbusNetworkDeviceStatistic struct {
@@ -85,7 +87,7 @@ func (u *Ubus) NetworkDeviceStatus(id int, name string) (UbusNetworkDevice, erro
 	ubusData := UbusNetworkDevice{}
 	ubusDataByte, err := json.Marshal(call.Result.([]interface{})[1])
 	if err != nil {
-		return UbusNetworkDevice{}, errors.New("Data error")
+		return UbusNetworkDevice{}, errors.New("data error")
 	}
 	json.Unmarshal(ubusDataByte, &ubusData)
 	return ubusData, nil

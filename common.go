@@ -9,13 +9,16 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/digineo/go-uci/v2"
 )
 
-//UbusResponseCode represent the status code from JSON-RPC Call
+// UbusResponseCode represent the status code from JSON-RPC Call
+//
 //go:generate stringer -type=UbusResponseCode
 type UbusResponseCode int
 
-//Represents enum ubus_msg_status from https://git.openwrt.org/?p=project/ubus.git;a=blob;f=ubusmsg.h;h=398b126b6dc01833937749a110181ea0debb1476;hb=HEAD
+// Represents enum ubus_msg_status from https://git.openwrt.org/?p=project/ubus.git;a=blob;f=ubusmsg.h;h=398b126b6dc01833937749a110181ea0debb1476;hb=HEAD
 const (
 	UbusStatusOK               UbusResponseCode = 0
 	UbusStatusInvalidCommand   UbusResponseCode = 1
@@ -31,15 +34,16 @@ const (
 	UbusStatusLast             UbusResponseCode = 11
 )
 
-//Ubus represents information to JSON-RPC Interaction with router
+// Ubus represents information to JSON-RPC Interaction with router
 type Ubus struct {
 	Username string
 	Password string
 	URL      string
-	AuthData UbusAuthData
+	AuthData *UbusAuthData
+	UciTree  uci.Tree
 }
 
-//UbusResponse represents a response from JSON-RPC
+// UbusResponse represents a response from JSON-RPC
 type UbusResponse struct {
 	JSONRPC          string
 	ID               int
@@ -58,31 +62,29 @@ type UbusExec struct {
 	Stdout string
 }
 
-//LoginCheck check if login RPC Session id has expired
+// LoginCheck check if login RPC Session id has expired
 func (u *Ubus) LoginCheck() error {
 	var err error
-	var i uint8
-	for start := time.Now(); time.Since(start) < 3*time.Second; {
-		if u.AuthData.ExpireTime.Before(time.Now()) {
+	for i := 0; i < 3; i++ {
+		if u.AuthData == nil || u.AuthData.ExpireTime.Before(time.Now().Add(time.Minute*3)) {
 			_, err = u.AuthLogin()
 			if err == nil {
-				break
+				return nil
 			}
+			time.Sleep(1 * time.Second)
 		} else {
-			break
+			return nil
 		}
-		i++
-		time.Sleep(time.Second)
 	}
-	if i == 3 {
-		return err
-	}
-	return nil
+	return err
 }
 
-//Call do a call to Json-RPC to get/set information
+// Call do a call to Json-RPC to get/set information
 func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
 	req, err := http.NewRequest("POST", u.URL, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return UbusResponse{}, err
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -92,7 +94,7 @@ func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
 	}
 	defer resp.Body.Close()
 	if resp.Status != "200 OK" {
-		return UbusResponse{}, fmt.Errorf("Error %s on (%s)", resp.Status, u.URL)
+		return UbusResponse{}, fmt.Errorf("error %s on (%s)", resp.Status, u.URL)
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := UbusResponse{}
@@ -100,7 +102,7 @@ func (u *Ubus) Call(jsonStr []byte) (UbusResponse, error) {
 	//Function Error
 	if result.Error.Code != 0 {
 		if strings.Compare(result.Error.Message, "Access denied") == 0 {
-			return UbusResponse{}, errors.New("Access denied for this instance, read https://openwrt.org/docs/techref/ubus#acls ")
+			return UbusResponse{}, errors.New("access denied for this instance, read https://openwrt.org/docs/techref/ubus#acls ")
 		}
 		return UbusResponse{}, errors.New(result.Error.Message)
 	}
